@@ -1,5 +1,5 @@
-load("./massive_testing_strategies_functions.R")
-
+source("src/massive_testing_strategies_functions.R")
+source("src/plot_functions.R")
 h <- 5
 w <- h * 1.6
 
@@ -18,36 +18,6 @@ plot_miss_positives(df_strategy_2_pool_5)
 ggsave("graphs/plot_positive_strategy2_pool_5.pdf", height = h, width = w)
 plot_number_test_per_person(df_strategy_2_pool_5)
 ggsave("graphs/plot_testsxperson_strategy2_pool_5.pdf", height = h, width = w)
-
-
-# cbind(df_strategy_1,total_cost_pool_5=df_strategy_2_pool_5$total_cost) %>%
-#   ggplot()+
-#   geom_line(
-#     aes(
-#       x = prevalence,
-#       y = total_cost_pool_5/total_cost-1,
-#       color =  prob_symp_less_5d,
-#       group =  prob_symp_less_5d
-#     ),
-#     size = 1
-#   )  +
-#      facet_grid(sens_model ~ spec_model) +
-#   scale_y_continuous(sec.axis = sec_axis(
-#     ~ . ,
-#     name = "Classifier sensitivity",
-#     breaks = NULL,
-#     labels = NULL
-#   )) +
-#   scale_x_continuous(
-#     labels = scales::number,
-#     sec.axis = sec_axis(
-#       ~ . ,
-#       name = "Classifier specificity",
-#       breaks = NULL,
-#       labels = NULL
-#     )
-#   )
-
 
 
 
