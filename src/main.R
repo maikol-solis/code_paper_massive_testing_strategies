@@ -1,5 +1,7 @@
+library(tidyverse)
 source("src/massive_testing_strategies_functions.R")
 source("src/plot_functions.R")
+
 h <- 5
 w <- h * 1.6
 
