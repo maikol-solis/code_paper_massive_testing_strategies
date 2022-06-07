@@ -662,71 +662,77 @@ covid_testing_strategies <-
 
         # Strategy 7 -----------------------------------------------------------
         else if (strategy == 7) {
-
-          ## Probability of model
-          prob_model_first_responder_pcr <- sens * prob_res_pos_pcr +
-            (1 - spec) * prob_res_neg_pcr
-
-          prob_model_high_risk_lamp <- sens * prob_res_pos_lamp +
-            (1 - spec) * prob_res_neg_lamp
-
-          prob_model_low_risk_ag <- (1 - sens) * prob_res_pos_ag +
-            spec * prob_res_neg_ag
-
-          ## People
-
-          people_first_responder <- people * prob_model_first_responder_pcr
-          people_high_risk <- people * prob_model_high_risk_lamp
-          people_low_risk <- people * prob_model_low_risk_ag
-
-          ## Number of tests
-          number_pcr_tests <- people_first_responder +
-            people_high_risk * prob_res_neg_given_high_risk_lamp
-
-          number_lamp_tests <- people_high_risk
-
-          number_ag_tests <- people_low_risk *
-            (1 + prob_res_pos_given_low_risk_ag)
-
-          number_alt_tests <- number_lamp_tests + number_ag_tests
-
-          number_positive_reported <-
-            people_first_responder * prob_res_neg_pcr +
-            people_high_risk * (prob_res_pos_lamp +
-              prob_res_neg_given_high_risk_lamp * prob_res_pos_pcr) +
-            people_low_risk * prob_res_pos_given_low_risk_ag * prob_res_pos_ag
+          for (prob_model_first_responder_pcr in c(0.005, 0.01, 0.015)) {
+            ## Probability of model
+            ## prob_model_first_responder_pcr <- sens * prob_res_pos_pcr +
+            ##   (1 - spec) * prob_res_neg_pcr
 
 
-          number_test_per_person <-
-            (number_pcr_tests + number_alt_tests) / (people)
+            prob_model_high_risk_lamp <- sens * prob_res_pos_lamp +
+              (1 - spec) * prob_res_neg_lamp
 
-          total_cost_pcr <- cost_pcr * number_pcr_tests
-          total_cost_alt <- cost_lamp * number_lamp_tests +
-            cost_antigen * number_ag_tests
-          total_cost <- total_cost_alt + total_cost_pcr
+            ## prob_model_low_risk_ag <- 1 - prob_model_high_risk_lamp
+            prob_model_low_risk_ag <- (1 - sens) * prob_res_pos_ag +
+              spec * prob_res_neg_ag
 
-          df_out <- rbind(
-            df_out,
-            data.frame(
-              prevalence,
-              sens_model = sens,
-              spec_model = spec,
-              sens_ag_test,
-              spec_ag_test,
-              sens_lamp_test,
-              spec_lamp_test,
-              prob_symp_less_5d,
-              prob_symp_more_5d,
-              number_alt_tests,
-              number_pcr_tests,
-              number_positive_reported,
-              number_positive_theoretical = people * prevalence,
-              number_test_per_person,
-              total_cost_alt,
-              total_cost_pcr,
-              total_cost
+            ## People
+
+            people_first_responder <- people * prob_model_first_responder_pcr
+            people_high_risk <- (people - people_first_responder) * prob_model_high_risk_lamp
+            people_low_risk <- (people - people_first_responder) * prob_model_low_risk_ag
+
+            ## Number of tests
+            number_pcr_tests <- people_first_responder +
+              people_high_risk * prob_res_neg_given_high_risk_lamp
+
+            number_lamp_tests <- people_high_risk
+
+            number_ag_tests <- people_low_risk *
+              (1 + prob_res_pos_given_low_risk_ag)
+
+            number_alt_tests <- number_lamp_tests + number_ag_tests
+
+            number_positive_reported <-
+              people_first_responder * prob_res_neg_pcr +
+              people_high_risk * (prob_res_pos_lamp +
+                prob_res_neg_given_high_risk_lamp * prob_res_pos_pcr) +
+              people_low_risk * prob_res_pos_given_low_risk_ag * prob_res_pos_ag
+
+
+            number_test_per_person <-
+              (number_pcr_tests + number_alt_tests) / (people)
+
+            total_cost_pcr <- cost_pcr * number_pcr_tests
+            total_cost_alt <- cost_lamp * number_lamp_tests +
+              cost_antigen * number_ag_tests
+            total_cost <- total_cost_alt + total_cost_pcr
+
+            df_out <- rbind(
+              df_out,
+              data.frame(
+                prevalence,
+                sens_model = sens,
+                spec_model = spec,
+                sens_ag_test,
+                spec_ag_test,
+                sens_lamp_test,
+                spec_lamp_test,
+                prob_symp_less_5d,
+                prob_symp_more_5d,
+                prob_model_first_responder_pcr,
+                prob_model_high_risk_lamp,
+                prob_model_low_risk_ag,
+                number_alt_tests,
+                number_pcr_tests,
+                number_positive_reported,
+                number_positive_theoretical = people * prevalence,
+                number_test_per_person,
+                total_cost_alt,
+                total_cost_pcr,
+                total_cost
+              )
             )
-          )
+          }
         }
       } # end sens-spec for-loop
     }
