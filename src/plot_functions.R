@@ -434,6 +434,110 @@ plot_combined <- function(df_combined) {
     )
 }
 
+
+
+## df_out %>%
+##   mutate(
+##     sens_model = scales::percent(sens_model),
+##     spec_model = scales::percent(spec_model),
+##     prevalence = 100 * prevalence,
+##     # prob_symp_less_5d = 100 * prob_symp_less_5d
+##   ) %>%
+##   ggplot() +
+##   geom_line(
+##     aes(
+##       x = prevalence,
+##       y = number_positive_reported / total_cost,
+##       color =  prob_symp_less_5d,
+##       group =  prob_symp_less_5d
+##     ),
+##     size = 1
+##   ) +
+##   facet_grid(strategy ~ sens_model) +
+##   scale_color_continuous(label = scales::percent) +
+##   scale_y_continuous(
+##     labels = scales::comma,
+##     sec.axis = sec_axis(
+##       ~.,
+##       name = "Strategy",
+##       breaks = NULL,
+##       labels = NULL
+##     )
+##   ) +
+##   scale_x_continuous(
+##     labels = scales::comma,
+##     sec.axis = sec_axis(
+##       ~.,
+##       name = "Classifier specificity",
+##       breaks = NULL,
+##       labels = NULL
+##     )
+##   ) +
+##   labs(
+##     color = "Antigen tests",
+##     x = "Prevalence (%)",
+##     y = "Total Positives / Total Costs"
+##   ) +
+##   cowplot::theme_minimal_grid() +
+##   theme(
+##     panel.border = element_rect(linetype = "solid", color = "black"),
+##     legend.title.align = 1,
+##     legend.justification = "center"
+##   )
+
+
+## df_out %>%
+##   mutate(
+##     sens_model = scales::percent(sens_model),
+##     spec_model = scales::percent(spec_model),
+##     prevalence = 100 * prevalence,
+##     # prob_symp_less_5d = 100 * prob_symp_less_5d
+##   ) %>%
+##   ggplot() +
+##   geom_line(
+##     aes(
+
+##      x = prevalence,
+##       y = (number_alt_tests + number_pcr_tests) / total_cost,
+##       color =  prob_symp_less_5d,
+##       group =  prob_symp_less_5d
+##     ),
+##     size = 1
+##   ) +
+##   facet_grid(strategy ~ sens_model) +
+##   scale_color_continuous(label = scales::percent) +
+##   scale_y_continuous(
+##     labels = scales::comma,
+##     sec.axis = sec_axis(
+##       ~.,
+##       name = "Strategy",
+##       breaks = NULL,
+##       labels = NULL
+##     )
+##   ) +
+##   scale_x_continuous(
+##     labels = scales::comma,
+##     sec.axis = sec_axis(
+##       ~.,
+##       name = "Classifier specificity",
+##       breaks = NULL,
+##       labels = NULL
+##     )
+##   ) +
+##   labs(
+##     color = "Antigen tests",
+##     x = "Prevalence (%)",
+##     y = "Total tests / Total cost"
+##   ) +
+##   cowplot::theme_minimal_grid() +
+##   theme(
+##     panel.border = element_rect(linetype = "solid", color = "black"),
+##     legend.title.align = 1,
+##     legend.justification = "center"
+##   )
+
+
+
 #   plt <-
 #     ggplot(df_out.clean,
 #            aes(x = prevalence, y = cost_total, color = Classifier sensitivity_vec)) +
