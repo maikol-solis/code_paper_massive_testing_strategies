@@ -4,7 +4,7 @@
 
 
 plot_cost <- function(df_out) {
-  if (df_out$strategy[1] <= 3) {
+  if (df_out$strategy[1] %in% c(1, 2, 3)) {
     df_out %>%
       mutate(
         sens_model = scales::percent(sens_model),
@@ -21,7 +21,7 @@ plot_cost <- function(df_out) {
           group =  prob_symp_less_5d
         ),
         size = 1
-      )  +
+      ) +
       geom_line(
         aes(x = prevalence, y = 1000 * prevalence),
         size = 1,
@@ -39,7 +39,7 @@ plot_cost <- function(df_out) {
       scale_y_continuous(
         labels = scales::comma,
         sec.axis = sec_axis(
-          ~ . ,
+          ~.,
           name = "Classifier sensitivity",
           breaks = NULL,
           labels = NULL
@@ -48,22 +48,24 @@ plot_cost <- function(df_out) {
       scale_x_continuous(
         labels = scales::number,
         sec.axis = sec_axis(
-          ~ . ,
+          ~.,
           name = "Classifier specificity",
           breaks = NULL,
           labels = NULL
         )
       ) +
-      labs(color = "Antigen tests",
-           x = "Prevalence (%)",
-           y = "Total cost ($)") +
+      labs(
+        color = "Antigen tests",
+        x = "Prevalence (%)",
+        y = "Total cost ($)"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(
         panel.border = element_rect(linetype = "solid", color = "black"),
         legend.title.align = 1,
         legend.justification = "center"
       )
-  } else {
+  } else if (df_out$strategy[1] %in% c(4, 5, 6)) {
     df_out %>%
       mutate(
         sens_model = scales::percent(sens_model),
@@ -71,9 +73,12 @@ plot_cost <- function(df_out) {
         prevalence = 100 * prevalence,
       ) %>%
       ggplot() +
-      geom_line(aes(x = prevalence,
-                    y = total_cost),
-                size = 2)  +
+      geom_line(aes(
+        x = prevalence,
+        y = total_cost
+      ),
+      size = 2
+      ) +
       geom_line(
         aes(x = prevalence, y = 1000 * prevalence),
         size = 1,
@@ -85,7 +90,7 @@ plot_cost <- function(df_out) {
       scale_y_continuous(
         labels = scales::comma,
         sec.axis = sec_axis(
-          ~ . ,
+          ~.,
           name = "Classifier sensitivity",
           breaks = NULL,
           labels = NULL
@@ -94,18 +99,74 @@ plot_cost <- function(df_out) {
       scale_x_continuous(
         labels = scales::comma,
         sec.axis = sec_axis(
-          ~ . ,
+          ~.,
           name = "Classifier specificity",
           breaks = NULL,
           labels = NULL
         )
       ) +
-      labs(x = "Prevalence (%)",
-           y = "Total cost ($)") +
+      labs(
+        x = "Prevalence (%)",
+        y = "Total cost ($)"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(panel.border = element_rect(linetype = "solid", color = "black"))
+  } else if (df_out$strategy[1] == 4) {
+    df_out %>%
+      mutate(
+        sens_model = scales::percent(sens_model),
+        spec_model = scales::percent(spec_model),
+        prevalence = 100 * prevalence,
+        # prob_symp_less_5d = 100 * prob_symp_less_5d
+      ) %>%
+      ggplot() +
+      geom_line(
+        aes(
+          x = prevalence,
+          y = total_cost,
+          color =  prob_model_first_responder_pcr,
+          group =  prob_model_first_responder_pcr
+        ),
+        size = 1
+      ) +
+      geom_line(
+        aes(x = prevalence, y = 1000 * prevalence),
+        size = 1,
+        linetype = "dashed",
+        color = "red"
+      ) +
+      facet_grid(sens_model ~ spec_model) +
+      scale_color_continuous(label = scales::percent) +
+      scale_y_continuous(
+        labels = scales::comma,
+        sec.axis = sec_axis(
+          ~.,
+          name = "Classifier sensitivity",
+          breaks = NULL,
+          labels = NULL
+        )
+      ) +
+      scale_x_continuous(
+        labels = scales::number,
+        sec.axis = sec_axis(
+          ~.,
+          name = "Classifier specificity",
+          breaks = NULL,
+          labels = NULL
+        )
+      ) +
+      labs(
+        color = "Essential Workers",
+        x = "Prevalence (%)",
+        y = "Total cost ($)"
+      ) +
+      cowplot::theme_minimal_grid() +
+      theme(
+        panel.border = element_rect(linetype = "solid", color = "black"),
+        legend.title.align = 1,
+        legend.justification = "center"
+      )
   }
-  
 }
 
 plot_miss_positives <- function(df_out) {
@@ -126,7 +187,7 @@ plot_miss_positives <- function(df_out) {
           group = prob_symp_less_5d
         ),
         size = 1
-      )  +
+      ) +
       geom_line(
         aes(x = prevalence, y = number_positive_theoretical),
         size = 1,
@@ -136,26 +197,28 @@ plot_miss_positives <- function(df_out) {
       facet_grid(sens_model ~ spec_model) +
       scale_color_continuous(label = scales::percent) +
       scale_y_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier sensitivity",
         breaks = NULL,
         labels = NULL
       )) +
       scale_x_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier specificity",
         breaks = NULL,
         labels = NULL
       )) +
-      labs(color = "Antigen tests",
-           x = "Prevalence (%)",
-           y = "Reported as positives") +
+      labs(
+        color = "Antigen tests",
+        x = "Prevalence (%)",
+        y = "Reported as positives"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(
         panel.border = element_rect(linetype = "solid", color = "black"),
         legend.title.align = 0.5
       )
-  } else{
+  } else {
     df_out %>%
       mutate(
         sens_model = scales::percent(sens_model),
@@ -164,7 +227,8 @@ plot_miss_positives <- function(df_out) {
       ) %>%
       ggplot() +
       geom_line(aes(x = prevalence, y = number_positive_reported),
-                size = 2)  +
+        size = 2
+      ) +
       geom_line(
         aes(x = prevalence, y = number_positive_theoretical),
         size = 1,
@@ -173,19 +237,21 @@ plot_miss_positives <- function(df_out) {
       ) +
       facet_grid(sens_model ~ spec_model) +
       scale_y_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier sensitivity",
         breaks = NULL,
         labels = NULL
       )) +
       scale_x_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier specificity",
         breaks = NULL,
         labels = NULL
       )) +
-      labs(x = "Prevalence (%)",
-           y = "Expected positives") +
+      labs(
+        x = "Prevalence (%)",
+        y = "Expected positives"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(panel.border = element_rect(linetype = "solid", color = "black"))
   }
@@ -209,7 +275,7 @@ plot_number_test_per_person <- function(df_out) {
           group = prob_symp_less_5d
         ),
         size = 1
-      )  +
+      ) +
       geom_hline(
         yintercept = 1,
         size = 1,
@@ -219,20 +285,22 @@ plot_number_test_per_person <- function(df_out) {
       facet_grid(sens_model ~ spec_model) +
       scale_color_continuous(label = scales::percent) +
       scale_y_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier sensitivity",
         breaks = NULL,
         labels = NULL
       )) +
       scale_x_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier specificity",
         breaks = NULL,
         labels = NULL
       )) +
-      labs(color = "Antigen tests",
-           x = "Prevalence (%)",
-           y = "Tests per person") +
+      labs(
+        color = "Antigen tests",
+        x = "Prevalence (%)",
+        y = "Tests per person"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(
         panel.border = element_rect(linetype = "solid", color = "black"),
@@ -246,9 +314,12 @@ plot_number_test_per_person <- function(df_out) {
         prevalence = 100 * prevalence
       ) %>%
       ggplot() +
-      geom_line(aes(x = prevalence,
-                    y = number_test_per_person),
-                size = 2)  +
+      geom_line(aes(
+        x = prevalence,
+        y = number_test_per_person
+      ),
+      size = 2
+      ) +
       geom_hline(
         yintercept = 1,
         size = 1,
@@ -257,19 +328,21 @@ plot_number_test_per_person <- function(df_out) {
       ) +
       facet_grid(sens_model ~ spec_model) +
       scale_y_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier sensitivity",
         breaks = NULL,
         labels = NULL
       )) +
       scale_x_continuous(sec.axis = sec_axis(
-        ~ . ,
+        ~.,
         name = "Classifier specificity",
         breaks = NULL,
         labels = NULL
       )) +
-      labs(x = "Prevalence (%)",
-           y = "Tests per person") +
+      labs(
+        x = "Prevalence (%)",
+        y = "Tests per person"
+      ) +
       cowplot::theme_minimal_grid() +
       theme(panel.border = element_rect(linetype = "solid", color = "black"))
   }
