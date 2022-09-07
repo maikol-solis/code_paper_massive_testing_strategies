@@ -87,6 +87,8 @@ df_combined <- df_strategy_1 %>%
   full_join(df_strategy_3) %>%
   full_join(df_strategy_4)
 
+plot_combined(df_combined)
+
 ggsave(
   "graphs/plot_combined.pdf",
   dpi = 1200,
