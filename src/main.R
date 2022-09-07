@@ -75,3 +75,16 @@ plot_miss_positives(df_strategy_7)
 ggsave("graphs/plot_positive_strategy7.pdf", height = h, width = w)
 plot_number_test_per_person(df_strategy_7)
 ggsave("graphs/plot_testsxperson_strategy7.pdf", height = h, width = w)
+# Combined graph -----
+df_combined <- df_strategy_1 %>%
+  full_join(df_strategy_2_pool_5) %>%
+  full_join(df_strategy_3) %>%
+  full_join(df_strategy_4)
+
+ggsave(
+  "graphs/plot_combined.pdf",
+  dpi = 1200,
+  height = h,
+  width = w,
+  scale = 1.2
+)

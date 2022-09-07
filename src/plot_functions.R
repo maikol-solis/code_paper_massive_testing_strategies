@@ -275,6 +275,91 @@ plot_number_test_per_person <- function(df_out) {
   }
 }
 
+plot_combined <- function(df_combined) {
+
+  # data.frame plot combined 1 ----
+  df_plot_combined <- df_combined %>%
+    replace(is.na(.), 0) %>%
+    filter(sens_model %in% c(0.6, 0.9), spec_model %in% c(0.6, 0.9)) %>%
+    mutate(
+      sens_model = scales::percent(sens_model),
+      spec_model = scales::percent(spec_model),
+      # prevalence = 100 * prevalence,
+      efficiency = number_positive_reported / total_cost * ((people_high_risk +
+        people_low_risk) / 1000),
+      stock = (number_alt_tests + number_pcr_tests) /
+        total_cost * ((people_high_risk +
+          people_low_risk) / 1000),
+      true_efficiency = (1000 * prevalence) / (100 * 1000 * prevalence) *
+        ((people_high_risk + people_low_risk) / 1000),
+      true_amortization = (1000 * prevalence) / (100 * 1000 * prevalence) *
+        ((people_high_risk + people_low_risk) / 1000)
+    )
+
+  # plot combined 1 ----
+  ggplot(
+    data = df_plot_combined,
+    mapping = aes(
+      y = stock,
+      x = efficiency,
+      color =  prob_symp_less_5d,
+      group =  prob_symp_less_5d
+    )
+  ) +
+    geom_path(
+      size = 1,
+      arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+      linejoin = "round"
+    ) +
+    geom_path(aes(
+      x = true_efficiency,
+      y = true_amortization
+    ),
+    color = "red",
+    arrow = arrow(length = unit(0.2, "cm"), type = "closed")
+    ) +
+    facet_grid(strategy ~ sens_model + spec_model,
+      labeller = labeller(
+        sens_model = ~ paste("Sens: ", .),
+        spec_model = ~ paste("Spec: ", .),
+        .multi_line = TRUE
+      )
+    ) +
+    scale_color_continuous(label = scales::percent) +
+    scale_y_continuous(
+      labels = scales::comma_format(scale = 100000),
+      sec.axis = sec_axis(
+        ~.,
+        name = "Strategy",
+        breaks = NULL,
+        labels = NULL
+      )
+    ) +
+    scale_x_continuous(
+      labels = scales::comma_format(scale = 100000),
+      # breaks = c(0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01),
+      sec.axis = sec_axis(
+        ~.,
+        name = "Classifier performance",
+        breaks = NULL,
+        labels = NULL
+      )
+    ) +
+    # coord_fixed(ratio = 0.15) +
+    labs(
+      color = "Antigen test",
+      caption = "Values assuming a budget of $100,000.",
+      y = "Stock capacity",
+      x = "Detection efficiency"
+    ) +
+    cowplot::theme_minimal_grid() +
+    theme(
+      panel.border = element_rect(linetype = "solid", color = "black"),
+      legend.title.align = 1,
+      legend.justification = "center",
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+}
 
 #   plt <-
 #     ggplot(df_out.clean,
