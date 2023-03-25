@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 # Pooling====
 
 # GROUP TESTING
@@ -587,9 +580,9 @@ covid_testing_strategies <-
             # High risk
             people_high_risk * prob_res_pos_given_high_risk_pcr *
               # (1 + prob_res_neg_given_high_risk_pcr) +
-              (1 + (1 - prob_res_pos_given_high_risk_pcr))
-          # Low risk
-          people_low_risk * prob_res_pos_given_low_risk_ag^2
+              (1 + (1 - prob_res_pos_given_high_risk_pcr)) +
+            # Low risk
+            people_low_risk * prob_res_pos_given_low_risk_ag^2
 
           number_test_per_person <-
             (number_pcr_tests + number_alt_tests) / (people)
